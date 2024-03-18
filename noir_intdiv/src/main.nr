@@ -7,9 +7,9 @@
 // Public Output: quotient Field element from integer division
 // 
 // Note: don't change the function signature / types below. This is for exercise purposes!
-fn main(x : pub Field, y : pub Field) -> pub Field {
-    // TODO: implement!
-    // ...
+fn main(x: pub Field, y: pub Field) -> pub Field {
+    /* Casts are range checks! */
+    (x as u32 / y as u32) as Field
 }
 
 #[test]

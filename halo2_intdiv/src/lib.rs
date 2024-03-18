@@ -1,4 +1,4 @@
-use halo2_base::{self, QuantumCell::Constant};
+use halo2_base::{self, QuantumCell, QuantumCell::Constant};
 use halo2_base::{
     gates::{GateInstructions, RangeChip, RangeInstructions},
     utils::ScalarField,
@@ -33,8 +33,24 @@ impl <'range, F: ScalarField> IntegerDivisionChip<F> {
         x: u32,
         y: u32,
     ) -> AssignedValue<F> {
-        // TODO: implement!
-        // ...
+        let quo = x / y;
+        let rem = x % y;
+
+        let quo = ctx.load_witness(F::from(quo as u64));
+        let rem = ctx.load_witness(F::from(rem as u64));
+        let y = ctx.load_witness(F::from(y as u64));
+
+        let reconstructed_x = self.range.gate.mul(ctx, quo, y);
+        let reconstructed_x = self.range.gate.add(ctx, reconstructed_x, rem);
+        let x = ctx.load_witness(F::from(x as u64));
+        ctx.constrain_equal(&reconstructed_x, &x);
+
+        self.range.range_check(ctx, quo, 32);
+        self.range.range_check(ctx, rem, 32);
+
+
+
+        quo
     }
 }
 
